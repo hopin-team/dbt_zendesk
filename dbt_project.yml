@@ -4,6 +4,7 @@ version: '0.8.4'
 config-version: 2
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 on-run-start: '{{ fivetran_utils.empty_variable_warning("ticket_field_history_columns", "zendesk_ticket_field_history") }}'
+profile: "zendesk"
 models:
   zendesk:
     +schema: zendesk
@@ -25,6 +26,11 @@ models:
       +materialized: ephemeral
     utils:
       +materialized: ephemeral
+dispatch:
+  - macro_namespace: dbt_utils
+    search_order: ['spark_utils', 'dbt_utils']
+  - macro_namespace: fivetran_utils
+    search_order: ['spark_utils', 'fivetran_utils']
 vars:
   zendesk:
     ticket_field_history_columns: ['assignee_id', 'status', 'priority']
