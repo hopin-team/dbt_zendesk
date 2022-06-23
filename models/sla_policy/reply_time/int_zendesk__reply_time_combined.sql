@@ -88,7 +88,7 @@ with reply_time_calendar_hours_sla as (
   left join ticket_solved_times
     on reply_time_breached_at.ticket_id = ticket_solved_times.ticket_id
     and ticket_solved_times.solved_at > reply_time_breached_at.sla_applied_at
-  {{ dbt_utils.group_by(n=6) }}
+  group by reply_time_breached_at.ticket_id, reply_time_breached_at.sla_policy_name, reply_time_breached_at.metric, reply_time_breached_at.sla_applied_at, reply_time_breached_at.target, reply_time_breached_at.in_business_hours
 
 ), reply_time_breached_at_remove_old_sla as (
   select 

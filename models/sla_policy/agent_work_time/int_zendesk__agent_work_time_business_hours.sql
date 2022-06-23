@@ -6,42 +6,18 @@
 -- Additionally, for business hours, only 'new' or 'open' status hours are counted if they are also during business hours
 with agent_work_time_filtered_statuses as (
 
-  select 
-       ticket_id,
-       valid_starting_at,
-       valid_ending_at,
-       ticket_status,
-       sla_applied_at,
-       target,
-       sla_policy_name,
-       ticket_created_at,
-       in_business_hours
+  select *
   from {{ ref('int_zendesk__agent_work_time_filtered_statuses') }}
   where in_business_hours
 
 ), schedule as (
 
-  select 
-       schedule_id,
-       time_zone,
-       start_time,
-       end_time,
-       created_at,
-       schedule_name,
-       start_time_utc,
-       end_time_utc,
-       valid_from,
-       valid_until,
-       unqiue_schedule_spine_key
+  select *
   from {{ ref('int_zendesk__schedule_spine') }}
 
 ), ticket_schedules as (
 
-  select 
-       ticket_id,
-       schedule_id,
-       schedule_created_at,
-       schedule_invalidated_at
+  select *
   from {{ ref('int_zendesk__ticket_schedules') }}
   
 -- cross schedules with work time
@@ -73,15 +49,7 @@ with agent_work_time_filtered_statuses as (
 ), ticket_full_solved_time as (
 
     select 
-      ticket_id,
-      sla_applied_at,
-      target,    
-      sla_policy_name,    
-      schedule_id,
-      valid_starting_at,
-      valid_ending_at,
-      status_valid_starting_at,
-      status_valid_ending_at,
+      ticket_status_crossed_with_schedule.*,
     ({{ fivetran_utils.timestamp_diff(
             "cast(" ~ dbt_date.week_start('ticket_status_crossed_with_schedule.valid_starting_at','UTC') ~ "as " ~ dbt_utils.type_timestamp() ~ ")", 
             "cast(ticket_status_crossed_with_schedule.valid_starting_at as " ~ dbt_utils.type_timestamp() ~ ")",
@@ -102,17 +70,7 @@ with agent_work_time_filtered_statuses as (
 ), weeks_cross_ticket_full_solved_time as (
     -- because time is reported in minutes since the beginning of the week, we have to split up time spent on the ticket into calendar weeks
     select 
-      ticket_id,
-      sla_applied_at,
-      target,    
-      sla_policy_name,    
-      schedule_id,
-      valid_starting_at,
-      valid_ending_at,
-      status_valid_starting_at,
-      status_valid_ending_at,
-      valid_starting_at_in_minutes_from_week,
-      raw_delta_in_minutes,
+      ticket_full_solved_time.*,
       generated_number - 1 as week_number
     from ticket_full_solved_time
     cross join weeks
@@ -142,17 +100,17 @@ with agent_work_time_filtered_statuses as (
 ), intercepted_periods_agent as (
   
     select 
-      ticket_id,
-      sla_applied_at,
-      target,
-      sla_policy_name,
-      valid_starting_at,
-      valid_ending_at,
-      week_number,
-      ticket_week_start_time_minute,
-      ticket_week_end_time_minute,
-      start_time_utc as schedule_start_time,
-      end_time_utc as schedule_end_time,
+      weekly_period_agent_work_time.ticket_id,
+      weekly_period_agent_work_time.sla_applied_at,
+      weekly_period_agent_work_time.target,
+      weekly_period_agent_work_time.sla_policy_name,
+      weekly_period_agent_work_time.valid_starting_at,
+      weekly_period_agent_work_time.valid_ending_at,
+      weekly_period_agent_work_time.week_number,
+      weekly_period_agent_work_time.ticket_week_start_time_minute,
+      weekly_period_agent_work_time.ticket_week_end_time_minute,
+      schedule.start_time_utc as schedule_start_time,
+      schedule.end_time_utc as schedule_end_time,
       least(ticket_week_end_time_minute, schedule.end_time_utc) - greatest(weekly_period_agent_work_time.ticket_week_start_time_minute, schedule.start_time_utc) as scheduled_minutes
     from weekly_period_agent_work_time
     join schedule on ticket_week_start_time_minute <= schedule.end_time_utc 
@@ -165,18 +123,7 @@ with agent_work_time_filtered_statuses as (
 ), intercepted_periods_with_running_total as (
   
     select 
-      ticket_id,
-      sla_applied_at,
-      target,
-      sla_policy_name,
-      valid_starting_at,
-      valid_ending_at,
-      week_number,
-      ticket_week_start_time_minute,
-      ticket_week_end_time_minute,
-      schedule_start_time,
-      schedule_end_time,
-      scheduled_minutes,
+      *,
       sum(scheduled_minutes) over 
         (partition by ticket_id, sla_applied_at 
           order by valid_starting_at, week_number, schedule_end_time
@@ -188,21 +135,9 @@ with agent_work_time_filtered_statuses as (
 
 ), intercepted_periods_agent_with_breach_flag as (
   select 
-      ticket_id,
-      sla_applied_at,
-      target,
-      sla_policy_name,
-      valid_starting_at,
-      valid_ending_at,
-      week_number,
-      ticket_week_start_time_minute,
-      ticket_week_end_time_minute,
-      schedule_start_time,
-      schedule_end_time,
-      scheduled_minutes,
-      running_total_scheduled_minutes,
-      target - running_total_scheduled_minutes as remaining_target_minutes,
-      lag(target - running_total_scheduled_minutes) over
+    intercepted_periods_with_running_total.*,
+    target - running_total_scheduled_minutes as remaining_target_minutes,
+    lag(target - running_total_scheduled_minutes) over
           (partition by ticket_id, sla_applied_at order by valid_starting_at, week_number, schedule_end_time) as lag_check,
     case when (target - running_total_scheduled_minutes) = 0 then true
        when (target - running_total_scheduled_minutes) < 0 
@@ -219,22 +154,7 @@ with agent_work_time_filtered_statuses as (
 ), intercepted_periods_agent_filtered as (
 
   select
-      ticket_id,
-      sla_applied_at,
-      target,
-      sla_policy_name,
-      valid_starting_at,
-      valid_ending_at,
-      week_number,
-      ticket_week_start_time_minute,
-      ticket_week_end_time_minute,
-      schedule_start_time,
-      schedule_end_time,
-      scheduled_minutes,
-      running_total_scheduled_minutes,
-      remaining_target_minutes,
-      lag_check,
-      is_breached_during_schedule,
+    *,
     (remaining_target_minutes + scheduled_minutes) as breach_minutes,
     greatest(ticket_week_start_time_minute, schedule_start_time) + (remaining_target_minutes + scheduled_minutes) as breach_minutes_from_week
   from intercepted_periods_agent_with_breach_flag
@@ -242,24 +162,7 @@ with agent_work_time_filtered_statuses as (
 ), agent_work_business_breach as (
   
   select 
-      ticket_id,
-      sla_applied_at,
-      target,
-      sla_policy_name,
-      valid_starting_at,
-      valid_ending_at,
-      week_number,
-      ticket_week_start_time_minute,
-      ticket_week_end_time_minute,
-      schedule_start_time,
-      schedule_end_time,
-      scheduled_minutes,
-      running_total_scheduled_minutes,
-      remaining_target_minutes,
-      lag_check,
-      is_breached_during_schedule,
-      breach_minutes,
-      breach_minutes_from_week,
+    *,
     {{ fivetran_utils.timestamp_add(
       "minute",
       "cast(((7*24*60) * week_number) + breach_minutes_from_week as " ~ dbt_utils.type_int() ~ " )",
@@ -269,24 +172,5 @@ with agent_work_time_filtered_statuses as (
 
 )
 
-select  
-      ticket_id,
-      sla_applied_at,
-      target,
-      sla_policy_name,
-      valid_starting_at,
-      valid_ending_at,
-      week_number,
-      ticket_week_start_time_minute,
-      ticket_week_end_time_minute,
-      schedule_start_time,
-      schedule_end_time,
-      scheduled_minutes,
-      running_total_scheduled_minutes,
-      remaining_target_minutes,
-      lag_check,
-      is_breached_during_schedule,
-      breach_minutes,
-      breach_minutes_from_week,
-      sla_breach_at
+select *
 from agent_work_business_breach

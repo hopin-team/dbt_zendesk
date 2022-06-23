@@ -42,7 +42,7 @@ with assignee_updates as (
         calculate_metrics.assignee_stations_count
     from calculate_metrics
 
-    {{ dbt_utils.group_by(n=6) }}
+    group by calculate_metrics.ticket_id, calculate_metrics.first_agent_assignment_date, calculate_metrics.first_assignee_id, calculate_metrics.last_agent_assignment_date, calculate_metrics.last_assignee_id, calculate_metrics.assignee_stations_count
 
 ), final as (
     select
