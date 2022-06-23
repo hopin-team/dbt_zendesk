@@ -30,7 +30,7 @@ with assignee_updates as (
         count(distinct value) as unique_assignee_count
     from calculate_metrics
 
-    group by 1
+    group by ticket_id
 
 ), window_group as (
     select

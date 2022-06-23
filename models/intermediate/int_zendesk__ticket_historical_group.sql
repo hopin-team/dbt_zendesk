@@ -19,7 +19,7 @@ with ticket_group_history as (
         count(group_id) as group_stations_count
     from group_breakdown
 
-    group by 1
+    group by ticket_id
 )
 
 select *

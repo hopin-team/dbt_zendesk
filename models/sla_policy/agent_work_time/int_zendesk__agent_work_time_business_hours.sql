@@ -93,7 +93,7 @@ with agent_work_time_filtered_statuses as (
               'second') }} /60
             ) as raw_delta_in_minutes
     from ticket_status_crossed_with_schedule
-    {{ dbt_utils.group_by(n=10) }}
+    group by ticket_id, sla_applied_at, target, sla_policy_name, schedule_id, valid_starting_at, valid_ending_at, status_valid_starting_at, status_valid_ending_at, valid_starting_at_in_minutes_from_week
 
 ), weeks as (
 

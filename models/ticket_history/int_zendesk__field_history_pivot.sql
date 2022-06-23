@@ -88,7 +88,7 @@ with field_history as (
         {% endfor %}
     
     from filtered
-    group by 1,2
+    group by ticket_id,date_day
 
 ), surrogate_key as (
 

@@ -40,7 +40,7 @@ with ticket_resolution_times_calendar as (
       
   from ticket_resolution_times_calendar
   join ticket_schedules on ticket_resolution_times_calendar.ticket_id = ticket_schedules.ticket_id
-  group by 1, 2, 3, 4
+  group by ticket_resolution_times_calendar.ticket_id, schedule_created_at, schedule_invalidated_at, schedule_id
 
 ), weeks as (
 
@@ -92,4 +92,4 @@ with ticket_resolution_times_calendar as (
     ticket_id,
     sum(scheduled_minutes) as full_resolution_business_minutes
   from intercepted_periods
-  group by 1
+  group by ticket_id

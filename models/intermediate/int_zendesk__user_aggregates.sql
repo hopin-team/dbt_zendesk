@@ -14,7 +14,7 @@ with users as (
     user_tags.user_id,
     {{ fivetran_utils.string_agg( 'user_tags.tags', "', '" )}} as user_tags
   from user_tags
-  group by 1
+  group by user_tags.user_id
 
 {% endif %}
 

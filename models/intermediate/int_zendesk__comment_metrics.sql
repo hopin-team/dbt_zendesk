@@ -34,7 +34,7 @@ comment_counts as (
                 end) as count_ticket_handoffs
     from ticket_comments
 
-    group by 1, 2
+    group by ticket_id, last_comment_added_at
 ),
 
 final as (

@@ -52,7 +52,7 @@ with satisfaction_updates as (
         sum(bad_to_good_score) as total_bad_to_good_score
     from satisfaction_scores
 
-    group by 1, 2
+    group by ticket_id, count_satisfaction_scores
 
 ), window_group as (
     select
@@ -79,7 +79,7 @@ with satisfaction_updates as (
     left join score_group
         on satisfaction_updates.ticket_id = score_group.ticket_id
 
-    group by 1, 2, 3, 4, 5, 6, 7, 8
+    group by satisfaction_updates.ticket_id, latest_reason.latest_satisfaction_reason, latest_comment.latest_satisfaction_comment, first_and_latest_score.first_satisfaction_score, first_and_latest_score.latest_satisfaction_score, score_group.count_satisfaction_scores, score_group.total_good_to_bad_score, score_group.total_bad_to_good_score
 
 ), final as (
     select

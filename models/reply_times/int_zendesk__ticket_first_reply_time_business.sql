@@ -52,7 +52,7 @@ with ticket_reply_times as (
   
   from first_reply_time
   join ticket_schedules on first_reply_time.ticket_id = ticket_schedules.ticket_id
-  group by 1, 2, 3, 4
+  group by first_reply_time.ticket_id, schedule_created_at, schedule_invalidated_at, schedule_id
 
 ), weeks as (
 
@@ -100,4 +100,4 @@ with ticket_reply_times as (
   select ticket_id,
          sum(scheduled_minutes) as first_reply_time_business_minutes
   from intercepted_periods
-  group by 1
+  group by ticket_id

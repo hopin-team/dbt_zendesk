@@ -50,7 +50,7 @@ with ticket_historical_status as (
               'second') }} /60
             ) as raw_delta_in_minutes
     from ticket_status_crossed_with_schedule
-    {{ dbt_utils.group_by(n=7) }}
+    group by ticket_id, ticket_status, schedule_id, status_schedule_start, status_schedule_end, status_valid_starting_at, status_valid_ending_at
 
 ), weeks as (
 
@@ -119,4 +119,4 @@ with ticket_historical_status as (
       sum(agent_work_time_in_minutes) as agent_work_time_in_business_minutes,
       sum(on_hold_time_in_minutes) as on_hold_time_in_business_minutes
     from business_minutes
-    group by 1
+    group by ticket_id
