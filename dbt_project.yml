@@ -12,17 +12,17 @@ models:
     agent_work_time:
       +materialized: ephemeral
     intermediate:
-      +schema: zendesk_intermediate
+      +schema: intermediate
       +materialized: table
     reply_times:
       +materialized: ephemeral
     resolution_times:
       +materialized: ephemeral
     sla_policy:
-      +schema: zendesk_intermediate
+      +schema: intermediate
       +materialized: table
     ticket_history:
-      +schema: zendesk_intermediate
+      +schema: intermediate
       +materialized: ephemeral
     utils:
       +materialized: ephemeral
@@ -59,3 +59,6 @@ vars:
 
     ticket_field_history_extension_months: 0 # how long to extend a ticket's field history past its closure date
     ticket_field_history_timeframe_years: 50 # how far back to pull tickets' field histories. default is everything
+  zendesk_source:
+    zendesk_database: zendesk
+    zendesk_schema: zendesk  
