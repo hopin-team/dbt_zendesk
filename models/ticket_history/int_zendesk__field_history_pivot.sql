@@ -3,7 +3,7 @@
 {{ 
     config(
         materialized='incremental',
-        partition_by = {'field': 'date_day', 'data_type': 'date'},
+        partition_by = ['date_day'],
         unique_key='ticket_day_id'
         ) 
 }}
@@ -88,7 +88,7 @@ with field_history as (
         {% endfor %}
     
     from filtered
-    group by 1,2
+    group by ticket_id,date_day
 
 ), surrogate_key as (
 

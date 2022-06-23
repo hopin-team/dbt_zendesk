@@ -55,7 +55,7 @@ union all
     {{ fivetran_utils.max_bool("is_breached_during_schedule") }}
   from agent_work_calendar_sla
 
-  group by 1, 2, 3, 4, 5, 6
+  group by ticket_id, sla_policy_name, metric, sla_applied_at, target, in_business_hours
 
 union all
 
@@ -71,7 +71,7 @@ union all
     {{ fivetran_utils.max_bool("is_breached_during_schedule") }}
   from requester_wait_calendar_sla
 
-  group by 1, 2, 3, 4, 5, 6
+  group by ticket_id, sla_policy_name, metric, sla_applied_at, target, in_business_hours
 
 
 {% if var('using_schedules', True) %}
@@ -90,7 +90,7 @@ union all
     {{ fivetran_utils.max_bool("is_breached_during_schedule") }}
   from agent_work_business_sla
   
-  group by 1, 2, 3, 4, 5, 6
+  group by ticket_id, sla_policy_name, metric, sla_applied_at, target, in_business_hours
 
 union all 
 
@@ -107,7 +107,7 @@ union all
     
   from requester_wait_business_sla
   
-  group by 1, 2, 3, 4, 5, 6
+  group by ticket_id, sla_policy_name, metric, sla_applied_at, target, in_business_hours
 
 {% endif %}
 

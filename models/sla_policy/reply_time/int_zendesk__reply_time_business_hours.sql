@@ -25,7 +25,7 @@ with ticket_schedules as (
     sum(end_time - start_time) as total_schedule_weekly_business_minutes
   -- referrinng to stg_zendesk__schedule instead of int_zendesk__schedule_spine just to calculcate total minutes
   from {{ ref('stg_zendesk__schedule') }}
-  group by 1
+  group by schedule_id
 
 ), ticket_sla_applied_with_schedules as (
 

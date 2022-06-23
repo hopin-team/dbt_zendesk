@@ -29,7 +29,7 @@ with historical_solved_status as (
     count(status) as solved_count 
 
   from historical_solved_status
-  group by 1
+  group by ticket_id
 
 )
 

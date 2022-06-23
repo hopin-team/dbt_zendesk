@@ -26,7 +26,7 @@ with ticket_updates as (
         count(*) as total_updates
     from ticket_requester
 
-    group by 1, 2
+    group by ticket_id, requester_id
 )
 
 select * 

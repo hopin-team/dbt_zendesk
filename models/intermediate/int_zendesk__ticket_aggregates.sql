@@ -17,7 +17,7 @@ with tickets as (
     ticket_tags.ticket_id,
     {{ fivetran_utils.string_agg( 'ticket_tags.tags', "', '" )}} as ticket_tags
   from ticket_tags
-  group by 1
+  group by ticket_tags.ticket_id
 
 ), final as (
   select 

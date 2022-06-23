@@ -31,7 +31,7 @@ with ticket_metrics as (
                 end) as suspended_user_count
     from user_table
 
-    group by 1
+    group by summary_helper
 
 ), ticket_metric_sum as (
     select 
@@ -107,7 +107,7 @@ with ticket_metrics as (
         count(total_comments)
     from ticket_metrics
     
-    group by 1
+    group by summary_helper
 
 
 ), final as (

@@ -21,4 +21,4 @@ from ticket
 left join ticket_reply_times
   using (ticket_id)
 
-group by 1
+group by ticket_id

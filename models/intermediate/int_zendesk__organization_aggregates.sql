@@ -17,7 +17,7 @@ with organizations as (
     left join organization_tags
         using (organization_id)
 
-    group by 1
+    group by organizations.organization_id
 {% endif %}
 
 --If you use using_domain_names tags this will be included, if not it will be ignored.
@@ -36,7 +36,7 @@ with organizations as (
     left join domain_names
         using(organization_id)
     
-    group by 1
+    group by organizations.organization_id
 {% endif %}
 
 
