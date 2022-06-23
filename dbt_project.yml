@@ -48,5 +48,5 @@ vars:
     ticket_field_history_timeframe_years: 50 # how far back to pull tickets' field histories. default is everything
   
   zendesk_source:
-    zendesk_database: hive_metastore
+    zendesk_database: zendesk
     zendesk_schema: zendesk

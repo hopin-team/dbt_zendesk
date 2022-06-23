@@ -2,17 +2,39 @@
 
 with ticket_historical_status as (
 
-    select *
+    select
+      ticket_id,
+      valid_starting_at,
+      valid_ending_at,
+      status_duration_calendar_minutes,
+      status,
+      ticket_status_counter,
+      unique_status_counter
     from {{ ref('int_zendesk__ticket_historical_status') }}
 
 ), ticket_schedules as (
 
-    select *
+    select
+      ticket_id,
+      schedule_id,
+      schedule_created_at,
+      schedule_invalidated_at
     from {{ ref('int_zendesk__ticket_schedules') }}
 
 ), schedule as (
 
-    select *
+    select
+      schedule_id,
+      time_zone,
+      start_time,
+      end_time,
+      created_at,
+      schedule_name,
+      start_time_utc,
+      end_time_utc,
+      valid_from,
+      valid_until,
+      unqiue_schedule_spine_key
     from {{ ref('int_zendesk__schedule_spine') }}
 
 ), ticket_status_crossed_with_schedule as (
