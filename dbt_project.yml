@@ -1,36 +1,24 @@
 name: 'zendesk'
 version: '0.8.4'
-
 config-version: 2
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 on-run-start: '{{ fivetran_utils.empty_variable_warning("ticket_field_history_columns", "zendesk_ticket_field_history") }}'
-profile: "zendesk"
+profile: "zendesk_dbt"
+
 models:
   zendesk:
-    +schema: zendesk
+    +schema: zendesk_modeled
     +materialized: table
-    agent_work_time:
-      +materialized: ephemeral
-    intermediate:
-      +schema: intermediate
-      +materialized: table
-    reply_times:
-      +materialized: ephemeral
-    resolution_times:
-      +materialized: ephemeral
-    sla_policy:
-      +schema: intermediate
-      +materialized: table
-    ticket_history:
-      +schema: intermediate
-      +materialized: ephemeral
-    utils:
-      +materialized: ephemeral
+  zendesk_source:
+    +schema: zendesk_modeled
+    +materialized: table
+
 dispatch:
   - macro_namespace: dbt_utils
     search_order: ['spark_utils', 'dbt_utils']
   - macro_namespace: fivetran_utils
     search_order: ['spark_utils', 'fivetran_utils']
+
 vars:
   zendesk:
     ticket_field_history_columns: ['assignee_id', 'status', 'priority']
@@ -56,9 +44,9 @@ vars:
     using_user_tags: true
     using_ticket_form_history: true
     using_organization_tags: true
-
     ticket_field_history_extension_months: 0 # how long to extend a ticket's field history past its closure date
     ticket_field_history_timeframe_years: 50 # how far back to pull tickets' field histories. default is everything
+  
   zendesk_source:
-    zendesk_database: zendesk
+    zendesk_database: hive_metastore
     zendesk_schema: zendesk
