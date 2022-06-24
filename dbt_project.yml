@@ -7,10 +7,10 @@ profile: "zendesk_dbt"
 
 models:
   zendesk:
-    +schema:
+    +schema: "{{ 'zendesk_modeled' if target.name == 'zendesk_hopin' else 'zendesk_streamyard_modeled' }}"
     +materialized: table
   zendesk_source:
-    +schema:
+    +schema: "{{ 'zendesk_modeled' if target.name == 'zendesk_hopin' else 'zendesk_streamyard_modeled' }}"
     +materialized: table
 
 dispatch:
@@ -48,5 +48,5 @@ vars:
     ticket_field_history_timeframe_years: 50 # how far back to pull tickets' field histories. default is everything
   
   zendesk_source:
-    zendesk_database: zendesk
-    zendesk_schema: zendesk
+    zendesk_database: "{{ 'zendesk' if target.name == 'zendesk_hopin' else 'zendesk_streamyard' }}"
+    zendesk_schema: "{{ 'zendesk' if target.name == 'zendesk_hopin' else 'zendesk_streamyard' }}"
