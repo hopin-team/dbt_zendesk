@@ -60,13 +60,13 @@ with ticket_historical_status as (
 ), ticket_full_solved_time as (
 
     select
-      ticket_status_crossed_with_schedule.id,
-      ticket_status_crossed_with_schedule.ticket_status,
-      ticket_status_crossed_with_schedule.schedule_id,
-      ticket_status_crossed_with_schedule.status_schedule_start,
-      ticket_status_crossed_with_schedule.status_schedule_end,
-      ticket_status_crossed_with_schedule.status_valid_starting_at,
-      ticket_status_crossed_with_schedule.status_valid_ending_at,
+      id,
+      ticket_status,
+      schedule_id,
+      status_schedule_start,
+      status_schedule_end,
+      status_valid_starting_at,
+      status_valid_ending_at,
     ({{ fivetran_utils.timestamp_diff(
             "cast(" ~ dbt_date.week_start('ticket_status_crossed_with_schedule.status_schedule_start','UTC') ~ "as " ~ dbt_utils.type_timestamp() ~ ")", 
             "cast(ticket_status_crossed_with_schedule.status_schedule_start as " ~ dbt_utils.type_timestamp() ~ ")",
