@@ -187,7 +187,7 @@ select
     _fivetran_synced,
     assignee_id,
     brand_id,
-    created_at,
+    ticket_enriched.created_at,
     updated_at,
     description,
     due_at,
