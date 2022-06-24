@@ -60,7 +60,7 @@ with ticket_historical_status as (
 ), ticket_full_solved_time as (
 
     select
-      id,
+      ticket_id,
       ticket_status,
       schedule_id,
       status_schedule_start,
@@ -87,7 +87,7 @@ with ticket_historical_status as (
 ), weeks_cross_ticket_full_solved_time as (
     -- because time is reported in minutes since the beginning of the week, we have to split up time spent on the ticket into calendar weeks
     select 
-      ticket_full_solved_time.id,
+      ticket_full_solved_time.ticket_id,
       ticket_full_solved_time.ticket_status,
       ticket_full_solved_time.schedule_id,
       ticket_full_solved_time.status_schedule_start,
@@ -104,7 +104,7 @@ with ticket_historical_status as (
 ), weekly_periods as (
 
     select
-      id,
+      ticket_id,
       ticket_status,
       schedule_id,
       status_schedule_start,
