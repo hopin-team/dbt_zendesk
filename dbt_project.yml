@@ -49,5 +49,5 @@ vars:
     ticket_field_history_timeframe_years: 50 # how far back to pull tickets' field histories. default is everything
   
   zendesk_source:
-    zendesk_database: {{% if var('schema_name') == 'zendesk_streamyard' %} zendesk_streamyard {% else %} zendesk {% endif %}}
-    zendesk_schema: {{% if var('schema_name') == 'zendesk_streamyard' %} zendesk_streamyard {% else %} zendesk {% endif %}}
+    zendesk_database: "{% if {{schema_name}} == 'zendesk_streamyard' %} zendesk_streamyard {% else %} zendesk {% endif %}"
+    zendesk_schema: "{% if {{schema_name}} == 'zendesk_streamyard' %} zendesk_streamyard {% else %} zendesk {% endif %}"
