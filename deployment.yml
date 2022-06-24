@@ -11,15 +11,15 @@ jobs:
    schedule: 0 3 * * * # Define when this job should run, using cron format. This example will run every day at 12:00pm (according to your warehouse timezone). For help with cron formatting, visit https://crontab.guru/.
    steps:
      - name: run models # Give each step in your job a name. This will enable you to track the steps in the logs.
-       command: dbt run # Enter the dbt command that should run in this step. This example will run all your models. For a list of available commands visit https://docs.getdbt.com/reference/model-selection-syntax/.
-     - name: test models
-       command: dbt test # This example will run all your tests.
+       command: dbt run --target zendesk_hopin --vars "{'zendesk_database':'zendesk', 'zendesk_schema':'zendesk'}" # Enter the dbt command that should run in this step. This example will run all your models. For a list of available commands visit https://docs.getdbt.com/reference/model-selection-syntax/.
+#     - name: test models
+#       command: dbt test # This example will run all your tests.
 
   - name: zendesk_streamyard_modeled_daily
    targetName: zendesk_streamyard # The name of the target that will be used when running the job. If it's not specified, the target will be named 'prod'.
    schedule: 0 3 * * * # Define when this job should run, using cron format. This example will run every day at 12:00pm (according to your warehouse timezone). For help with cron formatting, visit https://crontab.guru/.
    steps:
      - name: run models # Give each step in your job a name. This will enable you to track the steps in the logs.
-       command: dbt run # Enter the dbt command that should run in this step. This example will run all your models. For a list of available commands visit https://docs.getdbt.com/reference/model-selection-syntax/.
-     - name: test models
-       command: dbt test # This example will run all your tests.
+       command: dbt run --target zendesk_streamyard --vars "{'zendesk_database':'zendesk_streamyard', 'zendesk_schema':'zendesk_streamyard'}" # Enter the dbt command that should run in this step. This example will run all your models. For a list of available commands visit https://docs.getdbt.com/reference/model-selection-syntax/.
+#     - name: test models
+#       command: dbt test # This example will run all your tests.
