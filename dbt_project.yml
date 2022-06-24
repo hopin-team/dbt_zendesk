@@ -7,10 +7,10 @@ profile: "zendesk_dbt"
 
 models:
   zendesk:
-    +schema: zendesk_modeled
+    +schema:
     +materialized: table
   zendesk_source:
-    +schema: zendesk_modeled
+    +schema:
     +materialized: table
 
 dispatch:
