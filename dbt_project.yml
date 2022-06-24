@@ -38,6 +38,7 @@ vars:
     user_tag: "{{ ref('stg_zendesk__user_tag') }}"
     user: "{{ ref('stg_zendesk__user') }}"
     daylight_time: "{{ ref('stg_zendesk__daylight_time') }}"
+    schema_name: 'default'
     time_zone: "{{ ref('stg_zendesk__time_zone') }}"
     using_schedules: true
     using_domain_names: true
@@ -48,5 +49,5 @@ vars:
     ticket_field_history_timeframe_years: 50 # how far back to pull tickets' field histories. default is everything
   
   zendesk_source:
-    zendesk_database: "{{ 'zendesk' if target.name == 'zendesk_hopin' else 'zendesk_streamyard' }}"
-    zendesk_schema: "{{ 'zendesk' if target.name == 'zendesk_hopin' else 'zendesk_streamyard' }}"
+    zendesk_database: "{{ 'zendesk' if schema_name == 'zendesk_hopin' else 'zendesk_streamyard' }}"
+    zendesk_schema: "{{ 'zendesk' if schema_name == 'zendesk_hopin' else 'zendesk_streamyard' }}"
