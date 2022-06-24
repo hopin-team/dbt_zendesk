@@ -101,7 +101,11 @@ with ticket_enriched as (
     last_agent_assignment_date,
     ticket_unassigned_duration_calendar_minutes,
     total_resolutions,
-    count_reopens
+    count_reopens,
+    first_assignment_to_resolution_calendar_minutes,
+    last_assignment_to_resolution_calendar_minutes,
+    first_resolution_calendar_minutes,
+    final_resolution_calendar_minutes
   from {{ ref('int_zendesk__ticket_resolution_times_calendar') }}
 
 ), ticket_reply_times_calendar as (
