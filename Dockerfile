@@ -1,7 +1,7 @@
 FROM python:3.8.5
 WORKDIR /dbt
 
-COPY ./* /dbt/
+COPY ./* /dbt/dbt_zendesk/
 
 # Update and install system packages
 RUN apt-get update -y && \
@@ -13,14 +13,14 @@ RUN apt-get update -y && \
   # git clone https://github.com/hopin-team/dbt_zendesk.git
   # cp -a ./* /dbt/dbt_zendesk
 
-# RUN mkdir -p ~/.dbt && \
-#   cp dbt_zendesk/dbt_profiles.yml ~/.dbt/profiles.yml
-#
+RUN mkdir -p ~/.dbt && \
+  cp dbt_zendesk/dbt_profiles.yml ~/.dbt/profiles.yml
+
 # Set environment variables
 ENV DBT_DIR /dbt/dbt_zendesk
 
 # Set working directory
 WORKDIR $DBT_DIR
 
-# # Run dbt
-# RUN dbt deps
+# Run dbt
+RUN dbt deps
