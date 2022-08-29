@@ -9,6 +9,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Update credentials in profiles.yml
+      run: |-
+        sed -i "s/ENV/${{secrets.ENV}}/g" "dbt_profiles.yml"
+        sed -i "s/DATABRICKS_HOST_URL/${{secrets.DATABRICKS_HOST_URL}}/g" "dbt_profiles.yml"
+        sed -i "s/DATABRICKS_HTTP_PATH/${{secrets.DATABRICKS_HTTP_PATH}}/g" "dbt_profiles.yml"
+        sed -i "s/DATABRICKS_ACCESS_TOKEN/${{secrets.DATABRICKS_ACCESS_TOKEN}}/g" "dbt_profiles.yml"
+
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
       with:

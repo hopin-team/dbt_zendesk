@@ -3,12 +3,12 @@ config:
     use_colors: True
 
 data_lake:
-  target: "${{secrets.ENV}}"
+  target: ENV
   outputs:
     databricks:
       type: databricks
-      host: "${{secrets.DATABRICKS_HOST_URL}}"
-      http_path: "${{secrets.DATABRICKS_HTTP_PATH}}"
-      token: "${{secrets.DATABRICKS_ACCESS_TOKEN}}"
+      host: DATABRICKS_HOST_URL
+      http_path: DATABRICKS_HTTP_PATH
+      token: DATABRICKS_ACCESS_TOKEN
       schema: zendesk
       threads: 8
