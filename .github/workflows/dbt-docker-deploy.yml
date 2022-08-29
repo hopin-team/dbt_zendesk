@@ -27,10 +27,10 @@ jobs:
         DATABRICKS_ACCESS_TOKEN: ${{secrets.DATABRICKS_ACCESS_TOKEN}}
       run: |
         echo $ENV
-        sed -i "s/ENV/$ENV/g" "dbt_profiles.yml"
-        sed -i "s/DATABRICKS_HOST_URL/$DATABRICKS_HOST_URL/g" "dbt_profiles.yml"
-        sed -i "s/DATABRICKS_HTTP_PATH/$DATABRICKS_HTTP_PATH/g" "dbt_profiles.yml"
-        sed -i "s/DATABRICKS_ACCESS_TOKEN/$DATABRICKS_ACCESS_TOKEN/g" "dbt_profiles.yml"
+        sed -i "s/ENV/$ENV/g" dbt_profiles.yml
+        sed -i "s/DATABRICKS_HOST_URL/$DATABRICKS_HOST_URL/g" dbt_profiles.yml
+        sed -i "s/DATABRICKS_HTTP_PATH/$DATABRICKS_HTTP_PATH/g" dbt_profiles.yml
+        sed -i "s/DATABRICKS_ACCESS_TOKEN/$DATABRICKS_ACCESS_TOKEN/g" dbt_profiles.yml
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
