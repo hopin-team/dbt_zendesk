@@ -9,14 +9,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Update credentials in profiles.yml
-      run: |
-        echo "$ENV"
-        sed -i "s/ENV/$ENV/g" "dbt_profiles.yml"
-        sed -i "s/DATABRICKS_HOST_URL/$DATABRICKS_HOST_URL/g" "dbt_profiles.yml"
-        sed -i "s/DATABRICKS_HTTP_PATH/$DATABRICKS_HTTP_PATH/g" "dbt_profiles.yml"
-        sed -i "s/DATABRICKS_ACCESS_TOKEN/$DATABRICKS_ACCESS_TOKEN/g" "dbt_profiles.yml"
-      shell: bash
+    - uses: microsoft/variable-substitution@v1
+        with:
+          files: 'dbt_profiles.yml'
         env:
           ENV: ${{secrets.ENV}}
           DATABRICKS_HOST_URL: ${{secrets.DATABRICKS_HOST_URL}}
