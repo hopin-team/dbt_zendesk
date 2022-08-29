@@ -18,6 +18,6 @@ jobs:
 
     - name: Build the databricks-dbt Docker image
       run: |
-        docker build . --tag ghcr.io/hopin/databricks-dbt:latest
-        docker run ghcr.io/hopin/databricks-dbt:latest
-        docker push ghcr.io/hopin/databricks-dbt:latest
+        docker build . --tag ghcr.io/hopin-team/databricks-dbt:latest
+        docker run ghcr.io/hopin-team/databricks-dbt:latest
+        docker push ghcr.io/hopin-team/databricks-dbt:latest
