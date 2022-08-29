@@ -16,11 +16,11 @@ RUN apt-get update -y && \
 # RUN mkdir -p ~/.dbt && \
 #   cp dbt_zendesk/dbt_profiles.yml ~/.dbt/profiles.yml
 #
-# # Set environment variables
-# ENV DBT_DIR /dbt/dbt_zendesk
-#
-# # Set working directory
-# WORKDIR $DBT_DIR
-#
+# Set environment variables
+ENV DBT_DIR /dbt/dbt_zendesk
+
+# Set working directory
+WORKDIR $DBT_DIR
+
 # # Run dbt
 # RUN dbt deps
