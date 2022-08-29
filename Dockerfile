@@ -1,7 +1,7 @@
 FROM python:3.8.5
 WORKDIR /dbt
 
-COPY ./* /dbt/dbt_zendesk
+COPY ./* /dbt/
 
 # Update and install system packages
 RUN apt-get update -y && \
