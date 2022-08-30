@@ -17,6 +17,7 @@ zendesk_dbt:
     target: zendesk_hopin
 zendesk_dbt_test:
   outputs:
+    zendesk_streamyard:
       type: databricks
       host: DATABRICKS_HOST_URL
       http_path: DATABRICKS_HTTP_PATH
