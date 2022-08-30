@@ -6,7 +6,7 @@ on:
     - cron: '30 10 * * *'
 
 jobs:
-  test_schedule:
+  build:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/hopin-team/databricks-dbt:latest
