@@ -1,0 +1,23 @@
+name: dbt-cron-jobs
+
+on:
+  schedule:
+    - cron: '0 10 * * *'
+    - cron: '30 10 * * *'
+
+jobs:
+  test_schedule:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hopin-team/databricks-dbt:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.PAT_TOKEN }}
+
+    steps:
+      - name: Running Zendesk Hopin
+        if: github.event.schedule != '0 10 * * *'
+        run: dbt run --target zendesk_hopin --vars "{'zendesk_database':'zendesk', 'zendesk_schema':'zendesk'}"
+      - name: Running Zendesk Streamyard
+        if: github.event.schedule != '0 10 * * *'
+        run: dbt run --target zendesk_streamyard --vars "{'zendesk_database':'zendesk_streamyard', 'zendesk_schema':'zendesk_streamyard'}"
