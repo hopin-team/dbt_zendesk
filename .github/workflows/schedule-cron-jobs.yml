@@ -13,6 +13,7 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PAT_TOKEN }}
+    environment: stage
 
     steps:
       - name: Running Zendesk Hopin
