@@ -2,13 +2,30 @@ config:
     send_anonymous_usage_stats: False
     use_colors: True
 
-data_lake:
-  target: ENV
+zendesk_dbt:
   outputs:
-    databricks:
+    zendesk_streamyard:
       type: databricks
       host: DATABRICKS_HOST_URL
       http_path: DATABRICKS_HTTP_PATH
       token: DATABRICKS_ACCESS_TOKEN
-      schema: zendesk
-      threads: 8
+      schema: dbt
+      threads: 1
+    zendesk_hopin:
+      type: databricks
+      host: DATABRICKS_HOST_URL
+      http_path: DATABRICKS_HTTP_PATH
+      token: DATABRICKS_ACCESS_TOKEN
+      schema: dbt
+      threads: 1
+    target: zendesk_hopin
+
+zendesk_dbt_test:
+  outputs:
+      type: databricks
+      host: DATABRICKS_HOST_URL
+      http_path: DATABRICKS_HTTP_PATH
+      token: DATABRICKS_ACCESS_TOKEN
+      schema: dbt
+      threads: 1
+    target: zendesk_streamyard

@@ -1,143 +1,53 @@
-config-version: 2
-
-name: 'zendesk_integration_tests'
+name: 'zendesk'
 version: '0.8.4'
+config-version: 2
+require-dbt-version: [">=1.0.0", "<2.0.0"]
+on-run-start: '{{ fivetran_utils.empty_variable_warning("ticket_field_history_columns", "zendesk_ticket_field_history") }}'
+profile: "zendesk_dbt"
 
-profile: 'integration_tests'
+models:
+  zendesk:
+    +schema: "{{ 'zendesk_modeled' if target.name == 'zendesk_hopin' else 'zendesk_streamyard_modeled' }}"
+    +materialized: table
+  zendesk_source:
+    +schema: "{{ 'zendesk_modeled' if target.name == 'zendesk_hopin' else 'zendesk_streamyard_modeled' }}"
+    +materialized: table
+
+dispatch:
+  - macro_namespace: dbt_utils
+    search_order: ['spark_utils', 'dbt_utils']
+  - macro_namespace: fivetran_utils
+    search_order: ['spark_utils', 'fivetran_utils']
 
 vars:
-  zendesk_schema: zendesk_integration_tests
   zendesk:
-    group:                  "{{ ref('stg_zendesk__group') }}"
-    organization:           "{{ ref('stg_zendesk__organization') }}"
-    schedule:               "{{ ref('stg_zendesk__schedule') }}"
-    ticket:                 "{{ ref('stg_zendesk__ticket') }}"
-    ticket_comment:         "{{ ref('stg_zendesk__ticket_comment') }}"
-    ticket_field_history:   "{{ ref('stg_zendesk__ticket_field_history') }}"
-    ticket_schedule:        "{{ ref('stg_zendesk__ticket_schedule') }}"
-    ticket_tag:             "{{ ref('stg_zendesk__ticket_tag') }}"
-    user_tag:               "{{ ref('stg_zendesk__user_tag') }}"
-    brand:                  "{{ ref('stg_zendesk__brand') }}"
-    ticket_form_history:    "{{ ref('stg_zendesk__ticket_form_history') }}"
-    domain_name:            "{{ ref('stg_zendesk__domain_name') }}"
-    organization_tag:       "{{ ref('stg_zendesk__organization_tag') }}"
-    user:                   "{{ ref('stg_zendesk__user') }}"
-    daylight_time:          "{{ ref('stg_zendesk__daylight_time') }}"
-    time_zone:              "{{ ref('stg_zendesk__time_zone') }}"
-  zendesk_source:
-    group:                  "{{ ref('group_data') }}"
-    organization:           "{{ ref('organization_data') }}"
-    schedule:               "{{ ref('schedule_data') }}"
-    ticket:                 "{{ ref('ticket_data') }}"
-    ticket_comment:         "{{ ref('ticket_comment_data') }}"
-    ticket_field_history:   "{{ ref('ticket_field_history_data') }}"
-    ticket_schedule:        "{{ ref('ticket_schedule_data') }}"
-    ticket_tag:             "{{ ref('ticket_tag_data') }}"
-    user_tag:               "{{ fivetran_utils.seed_data_helper('user_tag_data',['snowflake']) }}" 
-    brand:                  "{{ fivetran_utils.seed_data_helper('brand_data',['postgres']) }}"
-    ticket_form_history:    "{{ ref('ticket_form_history_data') }}"
-    domain_name:            "{{ ref('domain_name_data') }}"
-    organization_tag:       "{{ fivetran_utils.seed_data_helper('organization_tag_data',['snowflake']) }}" 
-    user:                   "{{ fivetran_utils.seed_data_helper('user_data',['snowflake']) }}" 
-    daylight_time:          "{{ ref('daylight_time_data') }}"
-    time_zone:              "{{ ref('time_zone_data') }}"
+    ticket_field_history_columns: ['assignee_id', 'status', 'priority']
+    ticket_field_history_updater_columns: []
+    group: "{{ ref('stg_zendesk__group) }}"
+    brand: "{{ ref('stg_zendesk__brand') }}"
+    domain_name: "{{ ref('stg_zendesk__domain_name') }}"
+    organization_tag: "{{ ref('stg_zendesk__organization_tag') }}"
+    organization: "{{ ref('stg_zendesk__organization') }}"
+    schedule: "{{ ref('stg_zendesk__schedule') }}"
+    ticket: "{{ ref('stg_zendesk__ticket') }}"
+    ticket_form_history: "{{ ref('stg_zendesk__ticket_form_history') }}"
+    ticket_comment: "{{ ref('stg_zendesk__ticket_comment') }}"
+    field_history: "{{ ref('stg_zendesk__ticket_field_history') }}"
+    ticket_schedule: "{{ ref('stg_zendesk__ticket_schedule') }}"
+    ticket_tag: "{{ ref('stg_zendesk__ticket_tag') }}"
+    user_tag: "{{ ref('stg_zendesk__user_tag') }}"
+    user: "{{ ref('stg_zendesk__user') }}"
+    daylight_time: "{{ ref('stg_zendesk__daylight_time') }}"
+    schema_name: 'default'
+    time_zone: "{{ ref('stg_zendesk__time_zone') }}"
+    using_schedules: true
+    using_domain_names: true
+    using_user_tags: true
+    using_ticket_form_history: true
+    using_organization_tags: true
+    ticket_field_history_extension_months: 0 # how long to extend a ticket's field history past its closure date
+    ticket_field_history_timeframe_years: 50 # how far back to pull tickets' field histories. default is everything
 
-seeds:
-  +quote_columns: "{{ true if target.type == 'redshift' else false }}"
-  zendesk_integration_tests:
-    +column_types:
-      _fivetran_synced: timestamp
-    group_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created_at: timestamp
-        updated_at: timestamp
-    organization_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created_at: timestamp
-        updated_at: timestamp
-    schedule_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        end_time: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        start_time: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        end_time_utc: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        start_time_utc: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created_at: timestamp
-    ticket_comment_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        user_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created: timestamp
-    ticket_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created_at: timestamp
-        due_at: timestamp
-        updated_at: timestamp
-        assignee_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        brand_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        external_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        forum_topic_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        group_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        organization_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        problem_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        requester_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        submitter_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        ticket_form_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        type: "{{ 'varchar(100)'  if target.type in ('redshift', 'postgres') else 'string'}}"
-    ticket_field_history_data:
-      +column_types:
-        ticket_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        user_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        updated: timestamp
-    ticket_schedule_data:
-      +column_types:
-        ticket_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        schedule_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created_at: timestamp
-    user_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        external_id: "{{ 'varchar(100)'  if target.type in ('redshift', 'postgres') else 'string'}}"
-        locale_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        organization_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created_at: timestamp
-        last_login_at: timestamp
-      +enabled: "{{ true if target.type != 'snowflake' else false }}"
-    user_tag_data:
-      +column_types:
-        user_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        _fivetran_synced: timestamp
-    brand_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        _fivetran_synced: timestamp
-      +enabled: "{{ true if target.type != 'postgres' else false }}"
-    brand_data_postgres:
-      +column_types:
-        id: bigint
-        _fivetran_synced: timestamp
-      +enabled: "{{ true if target.type == 'postgres' else false }}"
-    ticket_form_history_data:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        _fivetran_synced: timestamp
-    domain_name_data:
-      +column_types:
-        organization_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        _fivetran_synced: timestamp
-    organization_tag_data:
-      +column_types:
-        organization_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        _fivetran_synced: timestamp
-    user_data_snowflake:
-      +column_types:
-        id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        external_id: "{{ 'varchar(100)'  if target.type in ('redshift', 'postgres') else 'string'}}"
-        locale_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        organization_id: "{{ 'int64' if target.type == 'bigquery' else 'bigint' }}"
-        created_at: timestamp
-        last_login_at: timestamp
-      +enabled: "{{ true if target.type == 'snowflake' else false }}"
+#  zendesk_source:
+#    zendesk_database: zendesk
+#    zendesk_schema: zendesk
