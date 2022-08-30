@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+zendesk_streamyard
     - name: Update credentials in profiles.yml
       env:
         ENV: ${{secrets.ENV}}

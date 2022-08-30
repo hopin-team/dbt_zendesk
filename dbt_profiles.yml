@@ -1,7 +1,3 @@
-config:
-    send_anonymous_usage_stats: False
-    use_colors: True
-
 zendesk_dbt:
   outputs:
     zendesk_streamyard:
@@ -19,7 +15,6 @@ zendesk_dbt:
       schema: dbt
       threads: 1
     target: zendesk_hopin
-
 zendesk_dbt_test:
   outputs:
       type: databricks
