@@ -2,8 +2,7 @@ name: dbt-cron-jobs
 
 on:
   schedule:
-    - cron: 0 10 * * *
-    - cron: 30 10 * * *
+    - cron: "0 10 * * *"
 
 jobs:
   build:
@@ -17,8 +16,5 @@ jobs:
 
     steps:
       - name: Running Zendesk Hopin
-        if: github.event.schedule = '0 10 * * *'
-        run: dbt run --target zendesk_hopin --vars "{'zendesk_database':'zendesk', 'zendesk_schema':'zendesk'}"
-      - name: Running Zendesk Streamyard
-        if: github.event.schedule = '30 10 * * *'
-        run: dbt run --target zendesk_streamyard --vars "{'zendesk_database':'zendesk_streamyard', 'zendesk_schema':'zendesk_streamyard'}"
+        run: |
+          dbt run --target zendesk_hopin --vars "{'zendesk_database':'zendesk', 'zendesk_schema':'zendesk'}"
