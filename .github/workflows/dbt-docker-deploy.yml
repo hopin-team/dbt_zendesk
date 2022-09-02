@@ -5,7 +5,7 @@ on: [push]
 jobs:
   publish-dbt-docker-image:
     runs-on: ubuntu-latest
-    environment: stage
+    environment: production
 
     steps:
     - uses: actions/checkout@v2
