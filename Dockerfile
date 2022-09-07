@@ -1,7 +1,7 @@
 FROM python:3.8.5
-WORKDIR /dbt
+WORKDIR /dbt/dbt_zendesk
 
-COPY ./* /dbt/dbt_zendesk/
+COPY . /dbt/dbt_zendesk
 
 # Update and install system packages
 RUN apt-get update -y && \
@@ -14,7 +14,7 @@ RUN apt-get update -y && \
   # cp -a ./* /dbt/dbt_zendesk
 
 RUN mkdir -p ~/.dbt && \
-  cp dbt_zendesk/dbt_profiles.yml ~/.dbt/profiles.yml
+  cp dbt_profiles.yml ~/.dbt/profiles.yml
 
 # Set environment variables
 ENV DBT_DIR /dbt/dbt_zendesk
