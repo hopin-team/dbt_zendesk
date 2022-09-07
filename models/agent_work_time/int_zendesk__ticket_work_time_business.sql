@@ -2,17 +2,39 @@
 
 with ticket_historical_status as (
 
-    select *
+    select
+      ticket_id,
+      valid_starting_at,
+      valid_ending_at,
+      status_duration_calendar_minutes,
+      status,
+      ticket_status_counter,
+      unique_status_counter
     from {{ ref('int_zendesk__ticket_historical_status') }}
 
 ), ticket_schedules as (
 
-    select *
+    select
+      ticket_id,
+      schedule_id,
+      schedule_created_at,
+      schedule_invalidated_at
     from {{ ref('int_zendesk__ticket_schedules') }}
 
 ), schedule as (
 
-    select *
+    select
+      schedule_id,
+      time_zone,
+      start_time,
+      end_time,
+      created_at,
+      schedule_name,
+      start_time_utc,
+      end_time_utc,
+      valid_from,
+      valid_until,
+      unqiue_schedule_spine_key
     from {{ ref('int_zendesk__schedule_spine') }}
 
 ), ticket_status_crossed_with_schedule as (
@@ -37,8 +59,14 @@ with ticket_historical_status as (
 
 ), ticket_full_solved_time as (
 
-    select 
-      ticket_status_crossed_with_schedule.*,
+    select
+      ticket_id,
+      ticket_status,
+      schedule_id,
+      status_schedule_start,
+      status_schedule_end,
+      status_valid_starting_at,
+      status_valid_ending_at,
     ({{ fivetran_utils.timestamp_diff(
             "cast(" ~ dbt_date.week_start('ticket_status_crossed_with_schedule.status_schedule_start','UTC') ~ "as " ~ dbt_utils.type_timestamp() ~ ")", 
             "cast(ticket_status_crossed_with_schedule.status_schedule_start as " ~ dbt_utils.type_timestamp() ~ ")",
@@ -59,7 +87,15 @@ with ticket_historical_status as (
 ), weeks_cross_ticket_full_solved_time as (
     -- because time is reported in minutes since the beginning of the week, we have to split up time spent on the ticket into calendar weeks
     select 
-      ticket_full_solved_time.*,
+      ticket_full_solved_time.ticket_id,
+      ticket_full_solved_time.ticket_status,
+      ticket_full_solved_time.schedule_id,
+      ticket_full_solved_time.status_schedule_start,
+      ticket_full_solved_time.status_schedule_end,
+      ticket_full_solved_time.status_valid_starting_at,
+      ticket_full_solved_time.status_valid_ending_at,
+      ticket_full_solved_time.start_time_in_minutes_from_week,
+      ticket_full_solved_time.raw_delta_in_minutes,
       generated_number - 1 as week_number
     from ticket_full_solved_time
     cross join weeks
@@ -68,8 +104,16 @@ with ticket_historical_status as (
 ), weekly_periods as (
 
     select
-
-      weeks_cross_ticket_full_solved_time.*,
+      ticket_id,
+      ticket_status,
+      schedule_id,
+      status_schedule_start,
+      status_schedule_end,
+      status_valid_starting_at,
+      status_valid_ending_at,
+      start_time_in_minutes_from_week,
+      raw_delta_in_minutes,
+      week_number,
       greatest(0, start_time_in_minutes_from_week - week_number * (7*24*60)) as ticket_week_start_time,
       least(start_time_in_minutes_from_week + raw_delta_in_minutes - week_number * (7*24*60), (7*24*60)) as ticket_week_end_time
     
