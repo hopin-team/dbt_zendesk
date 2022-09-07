@@ -1,0 +1,27 @@
+zendesk_dbt:
+  outputs:
+    zendesk_streamyard:
+      type: databricks
+      host: DATABRICKS_HOST_URL
+      http_path: DATABRICKS_HTTP_PATH
+      token: DATABRICKS_ACCESS_TOKEN
+      schema: dbt
+      threads: 1
+    zendesk_hopin:
+      type: databricks
+      host: DATABRICKS_HOST_URL
+      http_path: DATABRICKS_HTTP_PATH
+      token: DATABRICKS_ACCESS_TOKEN
+      schema: dbt
+      threads: 1
+    target: zendesk_hopin
+zendesk_dbt_test:
+  outputs:
+    zendesk_streamyard:
+      type: databricks
+      host: DATABRICKS_HOST_URL
+      http_path: DATABRICKS_HTTP_PATH
+      token: DATABRICKS_ACCESS_TOKEN
+      schema: dbt
+      threads: 1
+    target: zendesk_streamyard
