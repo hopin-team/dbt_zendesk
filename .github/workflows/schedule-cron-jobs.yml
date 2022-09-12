@@ -16,6 +16,11 @@ jobs:
     environment: production
 
     steps:
+      - name: Setup dbt profile
+        run: |
+          cd /dbt/dbt_zendesk
+          mkdir ~/.dbt/
+          cp /root/.dbt/profiles.yml ~/.dbt/
       - name: Running Zendesk Hopin
         if: github.event.schedule == '0 10 * * *'
         run: |
