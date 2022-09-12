@@ -18,7 +18,11 @@ jobs:
     steps:
       - name: Running Zendesk Hopin
         if: github.event.schedule == '0 10 * * *'
-        run: dbt run --target zendesk_hopin --vars "{'zendesk_schema':'zendesk'}"
+        run: |
+          cd /dbt/dbt_zendesk
+          dbt run --target zendesk_hopin --vars "{'zendesk_schema':'zendesk'}"
       - name: Running Zendesk Streamyard
         if: github.event.schedule == '30 10 * * *'
-        run: dbt run --target zendesk_streamyard --vars "{'zendesk_schema':'zendesk_streamyard'}"
+        run: |
+          cd /dbt/dbt_zendesk
+          dbt run --target zendesk_streamyard --vars "{'zendesk_schema':'zendesk_streamyard'}"
