@@ -32,4 +32,5 @@ jobs:
         run: |
           cd /dbt/dbt_zendesk
           cp /root/.dbt/profiles.yml /github/home/
+          cat ~/.dbt/profiles.yml
           dbt run --target zendesk_hopin --vars "{'zendesk_schema':'zendesk'}"
