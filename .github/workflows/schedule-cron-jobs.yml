@@ -1,11 +1,9 @@
 name: dbt-cron-jobs
 
-#on:
-#  schedule:
-#    - cron: '0 10 * * *'
-#    - cron: '30 10 * * *'
-
-on: [push]
+on:
+  schedule:
+    - cron: '0 10 * * *'
+    - cron: '30 10 * * *'
 
 jobs:
   build:
@@ -18,20 +16,18 @@ jobs:
     environment: production
 
     steps:
-#      - name: Running Zendesk Hopin
-#        if: github.event.schedule == '0 10 * * *'
-#        run: |
-#          cd /dbt/dbt_zendesk
-#          dbt run --target zendesk_hopin --vars "{'zendesk_schema':'zendesk'}"
-#      - name: Running Zendesk Streamyard
-#        if: github.event.schedule == '30 10 * * *'
-#        run: |
-#          cd /dbt/dbt_zendesk
-#          dbt run --target zendesk_streamyard --vars "{'zendesk_schema':'zendesk_streamyard'}"
-      - name: test dbt run
+      - name: Setup dbt profile
         run: |
           cd /dbt/dbt_zendesk
           mkdir ~/.dbt/
           cp /root/.dbt/profiles.yml ~/.dbt/
-          cat ~/.dbt/profiles.yml
+      - name: Running Zendesk Hopin
+        if: github.event.schedule == '0 10 * * *'
+        run: |
+          cd /dbt/dbt_zendesk
           dbt run --target zendesk_hopin --vars "{'zendesk_schema':'zendesk'}"
+      - name: Running Zendesk Streamyard
+        if: github.event.schedule == '30 10 * * *'
+        run: |
+          cd /dbt/dbt_zendesk
+          dbt run --target zendesk_streamyard --vars "{'zendesk_schema':'zendesk_streamyard'}"
