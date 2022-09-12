@@ -18,13 +18,17 @@ jobs:
     environment: production
 
     steps:
-      - name: Running Zendesk Hopin
-        if: github.event.schedule == '0 10 * * *'
+#      - name: Running Zendesk Hopin
+#        if: github.event.schedule == '0 10 * * *'
+#        run: |
+#          cd /dbt/dbt_zendesk
+#          dbt run --target zendesk_hopin --vars "{'zendesk_schema':'zendesk'}"
+#      - name: Running Zendesk Streamyard
+#        if: github.event.schedule == '30 10 * * *'
+#        run: |
+#          cd /dbt/dbt_zendesk
+#          dbt run --target zendesk_streamyard --vars "{'zendesk_schema':'zendesk_streamyard'}"
+      - name: test dbt run
         run: |
           cd /dbt/dbt_zendesk
           dbt run --target zendesk_hopin --vars "{'zendesk_schema':'zendesk'}"
-      - name: Running Zendesk Streamyard
-        if: github.event.schedule == '30 10 * * *'
-        run: |
-          cd /dbt/dbt_zendesk
-          dbt run --target zendesk_streamyard --vars "{'zendesk_schema':'zendesk_streamyard'}"
